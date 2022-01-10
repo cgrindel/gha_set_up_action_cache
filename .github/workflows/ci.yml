@@ -1,0 +1,26 @@
+name: CI for PR Merge
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  ubuntu_build:
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Test Cache for CI
+      uses: ./
+      with:
+        path: ~/.cache/ci_test_cache
+        key_prefix: "2022-01-10T16:19:15" 
+        cache_name: gha_set_up_action_cache_ci
+        key_suffix: ${{ hashFiles('foo.txt') }}
+    
+    - name: Test Cache Directory
+      shell: bash
+      run: |
+        [[ -d ~/.cache/ci_test_cache ]] || \
+          (echo >&2 "The cache directory does not exist." && exit 1)
+        echo "hello" > ~/.cache/ci_test_cache/foo.txt
