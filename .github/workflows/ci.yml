@@ -16,7 +16,7 @@ jobs:
         path: ~/.cache/ci_test_cache
         key_prefix: "2022-01-10T16:19:15" 
         cache_name: gha_set_up_action_cache_ci
-        key_suffix: ${{ hashFiles('foo.txt') }}
+        key_suffix: ${{ hashFiles('*') }}
     
     - name: Test Cache Directory
       shell: bash
