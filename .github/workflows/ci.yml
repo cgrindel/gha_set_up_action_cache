@@ -5,12 +5,32 @@ on:
     branches: [ main ]
 
 jobs:
-  ubuntu_build:
+  write_to_cache:
     runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v2
 
-    - name: Test Cache for CI
+    - name: Configure the Cache
+      uses: ./
+      with:
+        path: ~/.cache/ci_test_cache
+        key_prefix: "2022-01-10T16:19:15" 
+        cache_name: gha_set_up_action_cache_ci
+        key_suffix: ${{ hashFiles('*') }}
+    
+    - name: Write to the Cache Directory
+      shell: bash
+      run: |
+        mkdir -p ~/.cache/ci_test_cache
+        echo "hello" > ~/.cache/ci_test_cache/foo.txt
+
+  read_from_cache:
+    runs-on: ubuntu-20.04
+    needs: [write_to_cache]
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Configure the Cache
       uses: ./
       with:
         path: ~/.cache/ci_test_cache
@@ -23,4 +43,6 @@ jobs:
       run: |
         [[ -d ~/.cache/ci_test_cache ]] || \
           (echo >&2 "The cache directory does not exist." && exit 1)
-        echo "hello" > ~/.cache/ci_test_cache/foo.txt
+        foo_contents="$(< ~/.cache/ci_test_cache/foo.txt)"
+        [[ "${foo_contents}" == "hello" ]] || \
+          (echo >&2 "Unexpected foo.txt contents. ${foo_contents}" && exit 1) 
