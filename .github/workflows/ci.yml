@@ -16,7 +16,7 @@ jobs:
         path: ~/.cache/ci_test_cache
         key_prefix: "2022-01-10T16:19:15" 
         cache_name: gha_set_up_action_cache_ci
-        key_suffix: ${{ hashFiles('*') }}
+        key_suffix: foo
     
     - name: Write to the Cache Directory
       shell: bash
@@ -24,7 +24,7 @@ jobs:
         mkdir -p ~/.cache/ci_test_cache
         echo "hello" > ~/.cache/ci_test_cache/foo.txt
 
-  read_from_cache:
+  read_from_cache_with_exact_key:
     runs-on: ubuntu-20.04
     needs: [write_to_cache]
     steps:
@@ -36,7 +36,30 @@ jobs:
         path: ~/.cache/ci_test_cache
         key_prefix: "2022-01-10T16:19:15" 
         cache_name: gha_set_up_action_cache_ci
-        key_suffix: ${{ hashFiles('*') }}
+        key_suffix: foo
+    
+    - name: Test Cache Directory
+      shell: bash
+      run: |
+        [[ -d ~/.cache/ci_test_cache ]] || \
+          (echo >&2 "The cache directory does not exist." && exit 1)
+        foo_contents="$(< ~/.cache/ci_test_cache/foo.txt)"
+        [[ "${foo_contents}" == "hello" ]] || \
+          (echo >&2 "Unexpected foo.txt contents. ${foo_contents}" && exit 1) 
+
+  read_from_cache_without_exact_key:
+    runs-on: ubuntu-20.04
+    needs: [write_to_cache]
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Configure the Cache
+      uses: ./
+      with:
+        path: ~/.cache/ci_test_cache
+        key_prefix: "2022-01-10T16:19:15" 
+        cache_name: gha_set_up_action_cache_ci
+        key_suffix: bar
     
     - name: Test Cache Directory
       shell: bash
