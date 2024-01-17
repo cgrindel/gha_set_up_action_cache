@@ -18,7 +18,7 @@ runs:
   using: composite
   steps:
     - name: ${{ inputs.cache_name }} Cache
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: ${{ inputs.path }}
         key: ${{ inputs.key_prefix }}-${{ runner.os }}-${{ inputs.cache_name }}-${{ inputs.key_suffix }}
