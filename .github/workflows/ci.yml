@@ -6,7 +6,7 @@ on:
 
 jobs:
   write_to_cache:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
     - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
 
@@ -25,7 +25,7 @@ jobs:
         echo "hello" > ~/.cache/ci_test_cache/foo.txt
 
   read_from_cache_with_exact_key:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs: [write_to_cache]
     steps:
     - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
@@ -48,7 +48,7 @@ jobs:
           (echo >&2 "Unexpected foo.txt contents. ${foo_contents}" && exit 1) 
 
   read_from_cache_without_exact_key:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs: [write_to_cache]
     steps:
     - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
